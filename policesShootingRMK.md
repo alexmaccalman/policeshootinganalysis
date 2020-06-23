@@ -73,7 +73,7 @@ Now we visualize our data.
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](policesShootingRMK_files/figure-markdown_strict/visualizeShooting-1.png)
+![](policesShootingRMK_files/figure-markdown_strict/shootplot-1.png)
 
 The above chart shows the total number of fatal police shootings for
 blacks and non-black victims. To better understand the relative
@@ -136,7 +136,7 @@ Next we visualize our data.
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](policesShootingRMK_files/figure-markdown_strict/unnamed-chunk-1-1.png)
+![](policesShootingRMK_files/figure-markdown_strict/plotshoot-1.png)
 
 The above chart shows that teh black fatal shootings per 1 million is
 significantly more than non-balck fatal shootings.
@@ -281,7 +281,7 @@ to the black poverty rate.
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](policesShootingRMK_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+![](policesShootingRMK_files/figure-markdown_strict/poverty-1.png)
 
 Although there are data points that have a high number of protests with
 higher black poverty rates, the data does not show any trend that is of
@@ -298,7 +298,7 @@ Now we will look at the political opportunity structure.
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](policesShootingRMK_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+![](policesShootingRMK_files/figure-markdown_strict/political-1.png)
 
 The NAACP variable is an (imperfect) proxy for a tradition of Black
 political activity in a city. This variable has a higher correlation and
@@ -333,7 +333,7 @@ However, this single variable only explains 23% of the variation.
     par(mfrow = c(2,2))
     plot(fit)
 
-![](policesShootingRMK_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![](policesShootingRMK_files/figure-markdown_strict/diagpol-1.png)
 
 The Residuals vs Fitted chart is a scatterplot between the residuals and
 predicted values and should look random; for this model, they do not. As
@@ -368,7 +368,7 @@ variable. This variable is the total enrolment of colleges in a locality
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](policesShootingRMK_files/figure-markdown_strict/unnamed-chunk-8-1.png)
+![](policesShootingRMK_files/figure-markdown_strict/ed-1.png)
 
 Although the plot does not show a trend and the correlation between this
 education variable and the number of protest is very low, all of the

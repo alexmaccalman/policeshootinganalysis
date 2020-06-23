@@ -37,7 +37,8 @@ yearlyshootings <- tibble(summarize(group, shootings =n()))
 ```
 
 Now we visualize our data.  
-```{r visualizeShooting}
+```{r shootplot}
+
 g <- ggplot(yearlyshootings,aes(x = year, y = shootings)) + 
         geom_point() + 
         geom_smooth(aes(linetype = Race, color = Race)) +
@@ -66,7 +67,7 @@ finaldf <- inner_join(yearlyshootings, pop, by = "key") %>%
 head(finaldf)
 ```
 Next we visualize our data.  
-```{r}
+```{r plotshoot}
 p <- ggplot(finaldf, aes(x = year, y = perCapita)) + 
         geom_point() + 
         geom_smooth(aes(linetype = race, color = race)) +
@@ -117,7 +118,7 @@ ggplot(povlong, aes(x = race, y = poverty)) +
 ```
 
 The black poverty rate median is much higher that the white poverty rate median. In order to confirm there is a statistical significance between rates we now perform a Welch two sample t-test. In the test, our null hypothesis is that the means of both poverty rates are zero. Each observation in this data table is a city's white and poverty rates.       
-```{r}
+```{r ttest}
 t.test(pov$black, pov$white)
 ```
 
@@ -132,7 +133,7 @@ mean(pov$white)
 
 ## What Variables Predict the Frequency of Black Lives Matter (BLM) Protests?  
 First we will examine the variables related to the resource, political, and educational opportunity structures.  We will examine each variable against the total number of BLM protests. To do this we first write functions for the correlation, a linear plot, a linear regression model fit summary, and the diagnostics plots for the fit. 
-```{r}
+```{r writefun}
 protests <- BLM$tot.protests
 protestCor <- function(x) {
         cor(protests, x)
@@ -147,7 +148,7 @@ protestPlot <- function(x, title) {
 We will start with the resource opportunity structure variable ralated to the black poverty rate.  
 
 
-```{r}
+```{r poverty}
 poverty <- BLM$BlackPovertyRate
 protestCor(poverty)
 protestPlot(poverty, "Black Poverty Rate (x) vs Total BLM Protests")
@@ -157,7 +158,7 @@ Although there are data points that have a high number of protests with higher b
 
 Now we will look at the political opportunity structure. 
 
-```{r}
+```{r political}
 pol <- BLM$NAACPyears
 protestCor(pol)
 protestPlot(pol, "Number of years a locality had a local NAACP branch (x) vs Total BLM Protests")
@@ -165,14 +166,14 @@ protestPlot(pol, "Number of years a locality had a local NAACP branch (x) vs Tot
 
 The NAACP variable is an (imperfect) proxy for a tradition of Black political activity in a city. This variable has a higher correlation and does show a linear trend. Therefore, we now will fit a linear model and check for the diagnostics.
 
-```{r}
+```{r fitpol}
 fit <- lm(tot.protests ~ pol, data = BLM)
 summary(fit)
 ```
 
 The coefficient of the NAACP variable x, is statistically significant. However, this single variable only explains 23% of the variation.
 
-```{r}
+```{r diagpol}
 par(mfrow = c(2,2))
 plot(fit)
 ```
@@ -189,7 +190,7 @@ These diagnostics indicate that the residual errors do not have equal variance a
 
 Our last opportunity structure we will examine is the education variable. This variable is the total enrolment of colleges in a locality / total population.         
 
-```{r}
+```{r ed}
 ed <- BLM$collegeenrollpc
 protestCor(ed)
 protestPlot(ed, "Total enrolment of colleges in a locality / total population (x) vs Total BLM Protests")
