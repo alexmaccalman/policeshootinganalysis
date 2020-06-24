@@ -4,31 +4,30 @@ author: "alex maccalman"
 date: "6/22/2020"
 output: md_document
 ---
+This analysis was performed by COL Alex MacCalman in support of a submission to the USMA Math Academy Professor Search Committee.  
+
 # Police Shooting and Black Lives Matter Protest Analysis  
-The purpose of this module is to support the interdisciplinary goal with police shooting data. This analysis calls attention to the ongoing social unrest resulting from a series of deadly shootings.  
+The purpose of this project is to examine recent data on fatal police shootings and Black Lives Matter (BLM) protest data to open a dialog about racial inequility and the contemporary BLM social movement.  
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 ```
-## What is the Per Capita Death Rate Among Blacks and Non-Blacks Due to Police Shootings?  
-The fatal police shooting data was downloaded from the data.world platform located [here](https://data.world/data-society/fatal-police-shootings).  
-The following are the key variables of interests:  
-data - imported as a character
-race - 
+## What is the Per Capita Fatal Police Shootings Among Blacks and Non-Blacks?  
+Fatal police shooting data was downloaded from the data.world platform located [here](https://data.world/data-society/fatal-police-shootings).  
+ 
 
 
 First we will download the data and convert it to a tibble data frame type. Then we examine the data.  
 ```{r downloadShooting}
-#download.file("https://raw.githubusercontent.com/washingtonpost/data-police-shootings/master/fatal-police-shootings-data.csv", "police.csv")
+download.file("https://raw.githubusercontent.com/washingtonpost/data-police-shootings/master/fatal-police-shootings-data.csv", "police.csv")
 df <- tibble(read.csv("police.csv"))
 dim(df)
 str(df)
 range(df$date)
 ```
-The data table contains 5,424 shooting from 2015 to 2020. 
-Now we must prepare the data in order to examine the amount of fatal police shootings. First we convert the date variable from a character format to a date format, extract the year and store in a new column, and convert all rows without the label "B" for black to the category "nonBlack." This will allow us to compare black shootings with non-black shootings. Additionally, we filter out the missing values in the race variable and the year 2020. Since every observation is one fatal shooting, we group the data by year and count the observations into a new table called "yearlyshootings."  
+The data table contains 5,424 shootings from 2015 to 2020. Now we will transform the data in order to examine the amount of fatal police shootings. First we convert the date variable from a character format to a date format, extract the year and store it in a new column, and convert all rows without the label "B" for black to the category "nonBlack." This will allow us to compare black shootings with non-black shootings. Additionally, we filter out the missing values in the race variable and the year 2020. Since every observation is one fatal shooting, we group the data by year and count the observations into a new table called "yearlyshootings."  
 ```{r transformShooting}
 df <- mutate(df, date = as.Date(date),year = year(date), Race = if_else(race == "B", "Black", "nonBlack")) %>%
         filter(year != 2020, !race =="")
@@ -42,28 +41,30 @@ Now we visualize our data.
 g <- ggplot(yearlyshootings,aes(x = year, y = shootings)) + 
         geom_point() + 
         geom_smooth(aes(linetype = Race, color = Race)) +
-        theme(legend.position = "top")
+        theme(legend.position = "top") +
+        labs(title = "Total Fatal Police Shootings from 2015 - 2019", 
+             y = "Total Fatal Police Shootings")
 suppressWarnings(print(g))
 ```
 
-The above chart shows the total number of fatal police shootings for blacks and non-black victims.  To better understand the relative comparison between these two categories, we now calculate the per capita values. We first need to get data on populations. We acquired the US population data [here](https://www.kff.org/other/state-indicator/distribution-by-raceethnicity/?dataView=1&activeTab=graph&currentTimeframe=0&startTimeframe=3&selectedDistributions=black--total&selectedRows=%7B%22wrapups%22:%7B%22united-states%22:%7B%7D%7D%7D&sortModel=%7B%22colId%22:%22Location%22,%22sort%22:%22asc%22%7D). This data only went up to 2018 and assume that the 2019 census data equals 2018. The differences between census populations each year is minimal, therefore, we expect that this assumption is valid. Here we read in the data and look at what it looks like.  
+The above chart shows the total number of fatal police shootings for blacks and non-black victims. To better understand the relative comparison between these two categories, we now calculate the per capita values. We first need to get data on populations. We acquired the US population data [here](https://www.kff.org/other/state-indicator/distribution-by-raceethnicity/?dataView=1&activeTab=graph&currentTimeframe=0&startTimeframe=3&selectedDistributions=black--total&selectedRows=%7B%22wrapups%22:%7B%22united-states%22:%7B%7D%7D%7D&sortModel=%7B%22colId%22:%22Location%22,%22sort%22:%22asc%22%7D). This data only went up to 2018 and assume that the 2019 census data equals 2018. The differences between census populations each year is minimal, therefore, we expect that this assumption is valid. Here we read in the data and look at what it looks like.  
 ```{r downloadPop}
 pop <- read.csv("pop.csv")
 head(pop)
 ```
-The data has the total US population and black populations. In order to obtain the non-black population, we widen the data table, subtract the black populations from the total, and lengthen back the data table.    
+The data provides the total US population and black populations. In order to obtain the non-black population, we widen the data table, subtract the black populations from the total, and lengthen back the data table.    
 ```{r transformPop}
 pop <- pivot_wider(pop, names_from = race, values_from = pop) %>%
         mutate(nonBlack = Total - Black) %>%
         pivot_longer(cols = c("Black", "nonBlack"), names_to = "race", values_to = "pop")
 ```
-In order to combine both data sets, we first create key values based on teh year and race columns and perform an inner joing by this key value.  
+In order to combine both data sets, we first create key values based on the year and race columns and perform an inner join by this key value.  
 ```{r innerJoin}
 pop <- mutate(pop, key = paste0(year, race))
 yearlyshootings <- mutate(yearlyshootings, key = paste0(year, Race))
 finaldf <- inner_join(yearlyshootings, pop, by = "key") %>%
         select(year = year.x, race, shootings, pop) %>%
-        mutate(perCapita = shootings/pop*1000000)
+        mutate(perCapita = shootings/pop*100000)
 head(finaldf)
 ```
 Next we visualize our data.  
@@ -72,11 +73,11 @@ p <- ggplot(finaldf, aes(x = year, y = perCapita)) +
         geom_point() + 
         geom_smooth(aes(linetype = race, color = race)) +
         theme(legend.position = "top") +
-        labs(title = "Fatal Shootings per 1 Million of US Population", y = "Deaths per 1 Million")
+        labs(title = "Fatal Shootings per 100,000 of US Population", y = "Deaths per 100,000")
 suppressWarnings(print(p))
 ```
 
-The above chart shows that teh black fatal shootings per 1 million is significantly more than non-balck fatal shootings.
+The above chart shows that the black fatal shootings per 1 million is significantly more than non-balck fatal shootings.
 
 ## Are Black Poverty Rates Higher Than White Poverty Rates in the US?. 
 We will now perform a t test to understand if there is a statistical difference between the white and black US poverty rates. We obtained the data from [this website](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/L2GSK6), the replication data for the article title "Black Lives Matter: Evidence that Police-Caused Deaths Predict Protest." The codebook and supporting r scripts are also found here that were developed to write the article. The article can be found [here](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/BFA2E74F4BCB25C3C222807E8B1111D4/S1537592717004273a.pdf/div-class-title-black-lives-matter-evidence-that-police-caused-deaths-predict-protest-activity-div.pdf).  
@@ -93,13 +94,11 @@ Each observation in this data set is for a city designated by a combined state a
 **Police Caused Deaths**    
 6. Data from 1/1/2013-08/09/2014 and 8/10/2014-8/10/2015  
 **Crime**    
-7. A crime dummy indicator for being listed in the top 100 highest violent crime cities in 2015.  
+7. A crime dummy indicator for being listed in the top 100 highest violent crime cities in 2015.    
 
 ```{r uploadBLM}
 BLM <- tibble(read.csv("BLM_cities.csv"))
-
 ```
-
 
 To perform our comparison we extract the white and black poverty rates, create a new data table and lengthen it to allow us to build a boxplot.  
 ```{r transformpov}
@@ -131,7 +130,7 @@ while the mean white poverty rate of all US cities is
 mean(pov$white)
 ```
 
-## What Variables Predict the Frequency of Black Lives Matter (BLM) Protests?  
+## What Variables Explain the Frequency of Black Lives Matter (BLM) Protests?  
 First we will examine the variables related to the resource, political, and educational opportunity structures.  We will examine each variable against the total number of BLM protests. To do this we first write functions for the correlation, a linear plot, a linear regression model fit summary, and the diagnostics plots for the fit. 
 ```{r writefun}
 protests <- BLM$tot.protests
@@ -196,7 +195,7 @@ protestCor(ed)
 protestPlot(ed, "Total enrolment of colleges in a locality / total population (x) vs Total BLM Protests")
 ```
 
-Although the plot does not show a trend and the correlation between this education variable and the number of protest is very low, all of the higher values of protest are concentrated on the lower end of the x-axis. This provides some indication that the cities will low enrollment in college have a higher number of protests. 
+Although the plot does not show a trend and the correlation between this education variable and the number of protest is very low, all of the higher values of protest are concentrated on the lower end of the x-axis. This provides some indication that the cities with low enrollment in college have a higher number of protests. 
 
 # Conclusion
 The analysis of single variable regression among the opportunity structures did not reveal any compelling evidence. The primary reason for this is that the outcome of interest is count data. The total BLM protest can be considered as a rate or frequency. This implies that there are other methods within the generalized linear models methods that could be used to analyze this data. In fact, the author of the article this data supported used a form of Poisson regression modeling call the negative binomial. There are many methods available to analyze data. In this exercise, we learned how to examine data, fit models, and diagnose their fit. 

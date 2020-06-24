@@ -1,60 +1,60 @@
+This analysis was performed by COL Alex MacCalman in support of a
+submission to the USMA Math Academy Professor Search Committee.
+
 Police Shooting and Black Lives Matter Protest Analysis
 =======================================================
 
-The purpose of this module is to support the interdisciplinary goal with
-police shooting data. This analysis calls attention to the ongoing
-social unrest resulting from a series of deadly shootings.
+The purpose of this project is to examine recent data on fatal police
+shootings and Black Lives Matter (BLM) protest data to open a dialog
+about racial inequility and the contemporary BLM social movement.
 
-What is the Per Capita Death Rate Among Blacks and Non-Blacks Due to Police Shootings?
---------------------------------------------------------------------------------------
+What is the Per Capita Fatal Police Shootings Among Blacks and Non-Blacks?
+--------------------------------------------------------------------------
 
-The fatal police shooting data was downloaded from the data.world
-platform located
-[here](https://data.world/data-society/fatal-police-shootings).  
-The following are the key variables of interests:  
-data - imported as a character race -
+Fatal police shooting data was downloaded from the data.world platform
+located [here](https://data.world/data-society/fatal-police-shootings).
 
 First we will download the data and convert it to a tibble data frame
 type. Then we examine the data.
 
-    #download.file("https://raw.githubusercontent.com/washingtonpost/data-police-shootings/master/fatal-police-shootings-data.csv", "police.csv")
+    download.file("https://raw.githubusercontent.com/washingtonpost/data-police-shootings/master/fatal-police-shootings-data.csv", "police.csv")
     df <- tibble(read.csv("police.csv"))
     dim(df)
 
-    ## [1] 5424   14
+    ## [1] 5428   14
 
     str(df)
 
-    ## tibble [5,424 x 14] (S3: tbl_df/tbl/data.frame)
-    ##  $ id                     : int [1:5424] 3 4 5 8 9 11 13 15 16 17 ...
-    ##  $ name                   : chr [1:5424] "Tim Elliot" "Lewis Lee Lembke" "John Paul Quintero" "Matthew Hoffman" ...
-    ##  $ date                   : chr [1:5424] "2015-01-02" "2015-01-02" "2015-01-03" "2015-01-04" ...
-    ##  $ manner_of_death        : chr [1:5424] "shot" "shot" "shot and Tasered" "shot" ...
-    ##  $ armed                  : chr [1:5424] "gun" "gun" "unarmed" "toy weapon" ...
-    ##  $ age                    : int [1:5424] 53 47 23 32 39 18 22 35 34 47 ...
-    ##  $ gender                 : chr [1:5424] "M" "M" "M" "M" ...
-    ##  $ race                   : chr [1:5424] "A" "W" "H" "W" ...
-    ##  $ city                   : chr [1:5424] "Shelton" "Aloha" "Wichita" "San Francisco" ...
-    ##  $ state                  : chr [1:5424] "WA" "OR" "KS" "CA" ...
-    ##  $ signs_of_mental_illness: chr [1:5424] "true" "false" "false" "true" ...
-    ##  $ threat_level           : chr [1:5424] "attack" "attack" "other" "attack" ...
-    ##  $ flee                   : chr [1:5424] "Not fleeing" "Not fleeing" "Not fleeing" "Not fleeing" ...
-    ##  $ body_camera            : chr [1:5424] "false" "false" "false" "false" ...
+    ## tibble [5,428 x 14] (S3: tbl_df/tbl/data.frame)
+    ##  $ id                     : int [1:5428] 3 4 5 8 9 11 13 15 16 17 ...
+    ##  $ name                   : chr [1:5428] "Tim Elliot" "Lewis Lee Lembke" "John Paul Quintero" "Matthew Hoffman" ...
+    ##  $ date                   : chr [1:5428] "2015-01-02" "2015-01-02" "2015-01-03" "2015-01-04" ...
+    ##  $ manner_of_death        : chr [1:5428] "shot" "shot" "shot and Tasered" "shot" ...
+    ##  $ armed                  : chr [1:5428] "gun" "gun" "unarmed" "toy weapon" ...
+    ##  $ age                    : int [1:5428] 53 47 23 32 39 18 22 35 34 47 ...
+    ##  $ gender                 : chr [1:5428] "M" "M" "M" "M" ...
+    ##  $ race                   : chr [1:5428] "A" "W" "H" "W" ...
+    ##  $ city                   : chr [1:5428] "Shelton" "Aloha" "Wichita" "San Francisco" ...
+    ##  $ state                  : chr [1:5428] "WA" "OR" "KS" "CA" ...
+    ##  $ signs_of_mental_illness: chr [1:5428] "True" "False" "False" "True" ...
+    ##  $ threat_level           : chr [1:5428] "attack" "attack" "other" "attack" ...
+    ##  $ flee                   : chr [1:5428] "Not fleeing" "Not fleeing" "Not fleeing" "Not fleeing" ...
+    ##  $ body_camera            : chr [1:5428] "False" "False" "False" "False" ...
 
     range(df$date)
 
-    ## [1] "2015-01-02" "2020-06-19"
+    ## [1] "2015-01-02" "2020-06-22"
 
-The data table contains 5,424 shooting from 2015 to 2020. Now we must
-prepare the data in order to examine the amount of fatal police
+The data table contains 5,424 shootings from 2015 to 2020. Now we will
+transform the data in order to examine the amount of fatal police
 shootings. First we convert the date variable from a character format to
-a date format, extract the year and store in a new column, and convert
-all rows without the label “B” for black to the category “nonBlack.”
-This will allow us to compare black shootings with non-black shootings.
-Additionally, we filter out the missing values in the race variable and
-the year 2020. Since every observation is one fatal shooting, we group
-the data by year and count the observations into a new table called
-“yearlyshootings.”
+a date format, extract the year and store it in a new column, and
+convert all rows without the label “B” for black to the category
+“nonBlack.” This will allow us to compare black shootings with non-black
+shootings. Additionally, we filter out the missing values in the race
+variable and the year 2020. Since every observation is one fatal
+shooting, we group the data by year and count the observations into a
+new table called “yearlyshootings.”
 
     df <- mutate(df, date = as.Date(date),year = year(date), Race = if_else(race == "B", "Black", "nonBlack")) %>%
             filter(year != 2020, !race =="")
@@ -68,7 +68,9 @@ Now we visualize our data.
     g <- ggplot(yearlyshootings,aes(x = year, y = shootings)) + 
             geom_point() + 
             geom_smooth(aes(linetype = Race, color = Race)) +
-            theme(legend.position = "top")
+            theme(legend.position = "top") +
+            labs(title = "Total Fatal Police Shootings from 2015 - 2019", 
+                 y = "Total Fatal Police Shootings")
     suppressWarnings(print(g))
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
@@ -97,33 +99,34 @@ read in the data and look at what it looks like.
     ## 5 2017 Black  38408000
     ## 6 2017 Total 317022500
 
-The data has the total US population and black populations. In order to
-obtain the non-black population, we widen the data table, subtract the
-black populations from the total, and lengthen back the data table.
+The data provides the total US population and black populations. In
+order to obtain the non-black population, we widen the data table,
+subtract the black populations from the total, and lengthen back the
+data table.
 
     pop <- pivot_wider(pop, names_from = race, values_from = pop) %>%
             mutate(nonBlack = Total - Black) %>%
             pivot_longer(cols = c("Black", "nonBlack"), names_to = "race", values_to = "pop")
 
 In order to combine both data sets, we first create key values based on
-teh year and race columns and perform an inner joing by this key value.
+the year and race columns and perform an inner join by this key value.
 
     pop <- mutate(pop, key = paste0(year, race))
     yearlyshootings <- mutate(yearlyshootings, key = paste0(year, Race))
     finaldf <- inner_join(yearlyshootings, pop, by = "key") %>%
             select(year = year.x, race, shootings, pop) %>%
-            mutate(perCapita = shootings/pop*1000000)
+            mutate(perCapita = shootings/pop*100000)
     head(finaldf)
 
     ## # A tibble: 6 x 5
     ##    year race     shootings       pop perCapita
     ##   <dbl> <chr>        <int>     <int>     <dbl>
-    ## 1  2015 Black          258  37923800      6.80
-    ## 2  2015 nonBlack       707 274854100      2.57
-    ## 3  2016 Black          234  38081700      6.14
-    ## 4  2016 nonBlack       670 276384700      2.42
-    ## 5  2017 Black          224  38408000      5.83
-    ## 6  2017 nonBlack       682 278614500      2.45
+    ## 1  2015 Black          258  37923800     0.680
+    ## 2  2015 nonBlack       707 274854100     0.257
+    ## 3  2016 Black          234  38081700     0.614
+    ## 4  2016 nonBlack       670 276384700     0.242
+    ## 5  2017 Black          224  38408000     0.583
+    ## 6  2017 nonBlack       682 278614500     0.245
 
 Next we visualize our data.
 
@@ -131,14 +134,14 @@ Next we visualize our data.
             geom_point() + 
             geom_smooth(aes(linetype = race, color = race)) +
             theme(legend.position = "top") +
-            labs(title = "Fatal Shootings per 1 Million of US Population", y = "Deaths per 1 Million")
+            labs(title = "Fatal Shootings per 100,000 of US Population", y = "Deaths per 100,000")
     suppressWarnings(print(p))
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
 ![](policesShootingRMK_files/figure-markdown_strict/plotshoot-1.png)
 
-The above chart shows that teh black fatal shootings per 1 million is
+The above chart shows that the black fatal shootings per 1 million is
 significantly more than non-balck fatal shootings.
 
 Are Black Poverty Rates Higher Than White Poverty Rates in the US?.
@@ -249,7 +252,7 @@ while the mean white poverty rate of all US cities is
 
     ## [1] 11.28742
 
-What Variables Predict the Frequency of Black Lives Matter (BLM) Protests?
+What Variables Explain the Frequency of Black Lives Matter (BLM) Protests?
 --------------------------------------------------------------------------
 
 First we will examine the variables related to the resource, political,
@@ -373,7 +376,7 @@ variable. This variable is the total enrolment of colleges in a locality
 Although the plot does not show a trend and the correlation between this
 education variable and the number of protest is very low, all of the
 higher values of protest are concentrated on the lower end of the
-x-axis. This provides some indication that the cities will low
+x-axis. This provides some indication that the cities with low
 enrollment in college have a higher number of protests.
 
 Conclusion
