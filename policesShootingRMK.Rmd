@@ -73,11 +73,11 @@ p <- ggplot(finaldf, aes(x = year, y = perCapita)) +
         geom_point() + 
         geom_smooth(aes(linetype = race, color = race)) +
         theme(legend.position = "top") +
-        labs(title = "Fatal Shootings per 100,000 of US Population", y = "Deaths per 100,000")
+        labs(title = "Fatal Shootings per 100,000 of US Population", y = "Fatal Shootings per 100,000")
 suppressWarnings(print(p))
 ```
 
-The above chart shows that the black fatal shootings per 1 million is significantly more than non-balck fatal shootings.
+The above chart shows that the black fatal shootings per 1 100,000 is significantly more than non-balck fatal shootings.
 
 ## Are Black Poverty Rates Higher Than White Poverty Rates in the US?. 
 We will now perform a t test to understand if there is a statistical difference between the white and black US poverty rates. We obtained the data from [this website](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/L2GSK6), the replication data for the article title "Black Lives Matter: Evidence that Police-Caused Deaths Predict Protest." The codebook and supporting r scripts are also found here that were developed to write the article. The article can be found [here](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/BFA2E74F4BCB25C3C222807E8B1111D4/S1537592717004273a.pdf/div-class-title-black-lives-matter-evidence-that-police-caused-deaths-predict-protest-activity-div.pdf).  

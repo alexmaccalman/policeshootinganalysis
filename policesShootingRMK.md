@@ -134,14 +134,14 @@ Next we visualize our data.
             geom_point() + 
             geom_smooth(aes(linetype = race, color = race)) +
             theme(legend.position = "top") +
-            labs(title = "Fatal Shootings per 100,000 of US Population", y = "Deaths per 100,000")
+            labs(title = "Fatal Shootings per 100,000 of US Population", y = "Fatal Shootings per 100,000")
     suppressWarnings(print(p))
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
 ![](policesShootingRMK_files/figure-markdown_strict/plotshoot-1.png)
 
-The above chart shows that the black fatal shootings per 1 million is
+The above chart shows that the black fatal shootings per 1 100,000 is
 significantly more than non-balck fatal shootings.
 
 Are Black Poverty Rates Higher Than White Poverty Rates in the US?.
